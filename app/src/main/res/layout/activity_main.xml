@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/main_bg_gif_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+    <net.center.blurview.ShapeBlurView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:blur_radius="5dp"/>
+    <RelativeLayout
+        android:id="@+id/main_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:id="@+id/main_image_view_title_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <net.center.blurview.ShapeBlurView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                app:blur_border_color="@color/black"
+                app:blur_corner_radius="5dp"
+                app:blur_radius="25dp" />
+
+            <TextView
+                android:id="@+id/main_image_view_title"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/main_image_view_title"
+                android:fontFamily="@font/bd_cartoon_shout"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Weclome YOLOX Demo"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/main_image_view_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_image_view_title_layout"
+            android:layout_marginTop="5dp">
+
+            <net.center.blurview.ShapeBlurView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                app:blur_border_color="@color/black"
+                app:blur_corner_radius="5dp"
+                app:blur_radius="25dp" />
+
+            <ImageView
+                android:id="@+id/main_display_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="@drawable/main_touch_area_stroke_corner"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:id="@+id/main_touch_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_touch" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/main_seek_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_image_view_layout"
+            android:layout_marginTop="5dp">
+            <net.center.blurview.ShapeBlurView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/main_image_view_title"
+                app:blur_radius="25dp"
+                app:blur_corner_radius="5dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="horizontal">
+                    <SeekBar
+                        android:id="@+id/main_conf_thre_seek_bar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="20"
+                        android:maxHeight="2dp"
+                        android:minHeight="2dp"
+                        />
+                    <TextView
+                        android:id="@+id/main_conf_thre_seek_bar_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/fourties"
+                        android:textColor="@color/black"
+                        android:text="CONF_THRE: 0"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
+                    <SeekBar
+                        android:id="@+id/main_nms_thre_seek_bar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="20"
+                        android:maxHeight="2dp"
+                        android:minHeight="2dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/fourties"
+                        android:textSize="13sp"
+                        android:text="NMSF_THRE: 0"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/main_detect_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_seek_bar_layout"
+            android:layout_marginTop="10dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/main_detect_btn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/main_btn"
+                android:text="DETECT"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/main_clear_btn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/main_btn"
+                android:text="CLEAR"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <TextView
+                android:id="@+id/main_author_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/baochi"
+                android:text="Author: DDGRCF"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/main_logo_image_view"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_log_plane" />
+
+            <LinearLayout
+                android:id="@+id/main_author_info_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/main_author_description"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_tencentqq" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/ic_github" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_zhihu" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

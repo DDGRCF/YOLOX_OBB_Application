@@ -18,12 +18,14 @@ public class YoloxObbNcnn {
     }
 
     // set class names
+    public static final List<Integer> classColors = new ArrayList<>();
     public static final List<String> classNames = new ArrayList<>(Arrays.asList(
-            "large-vehicle", "swimming-pool", "helicopter", "bridge",
-            "plane", "ship", "soccer-ball-field", "basketball-court",
-            "ground-track-field", "small-vehicle", "baseball-diamond",
-            "tennis-court", "roundabout", "storage-tank", "harbor"
+            "LV", "SP", "HC", "BR",
+            "PL", "SP", "SBF", "BC",
+            "GTF", "SV", "BD",
+            "TC", "RA", "ST", "HB"
     ));
+    public static Param parameter = new Param();
 
     // singleton
     private static YoloxObbNcnn instance = new YoloxObbNcnn();
@@ -37,8 +39,10 @@ public class YoloxObbNcnn {
     // detect bitmap with parameters
     public native Obj[] Detect(Bitmap bitmap, Param param);
 
+    public native Obj[] Deal(Obj objects, Param param);
+
     // rotated rectangle object
-    public class Obj {
+    static public class Obj {
         public float x;
         public float y;
         public float w;
@@ -63,7 +67,7 @@ public class YoloxObbNcnn {
     }
 
     // detect parameters
-    public class Param {
+    public static class Param {
         public float confScoreThreshold = 0.2f;
         public float nmsIoUThreshold = 0.1f;
         public boolean agnostic = false;

@@ -164,6 +164,10 @@ public class SplashActivity extends AppCompatActivity {
                 handler.post(()->{
                     mSplashLoadingInformation.setText("loading the model ...");
                 });
+                for (int i = 0; i < YoloxObbNcnn.classNames.size(); i++) {
+                    YoloxObbNcnn.classColors.add(i, Constants.colors[i % YoloxObbNcnn.classNames.size()]);
+                }
+
                 boolean ret = YoloxObbNcnn.getInstance().Init(getAssets());
                 handler.post(()->{
                     if (ret) {

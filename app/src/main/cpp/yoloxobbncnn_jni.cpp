@@ -322,4 +322,10 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
     return jObjArray;
 }
 
+JNIEXPORT jobjectArray JNICALL
+Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Deal(JNIEnv *env, jobject thiz, jobject objects,
+                                                     jobject param) {
+    // TODO: implement Deal()
+}
+
 }

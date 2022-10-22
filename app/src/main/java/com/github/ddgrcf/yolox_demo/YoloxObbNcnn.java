@@ -39,7 +39,7 @@ public class YoloxObbNcnn {
     // detect bitmap with parameters
     public native Obj[] Detect(Bitmap bitmap, Param param);
 
-    public native Obj[] Deal(Obj objects, Param param);
+    public native Obj[] Deal(Obj[] objects, Param param);
 
     // rotated rectangle object
     static public class Obj {

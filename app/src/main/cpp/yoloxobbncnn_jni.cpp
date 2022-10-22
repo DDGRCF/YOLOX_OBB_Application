@@ -210,9 +210,6 @@ JNIEXPORT jobjectArray JNICALL
 Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self, jobject bitmap,
                                                        jobject param) {
     Parameter parameter{};
-    parameter.conf_thre = env->GetFloatField(param, conf_thre_id);
-    parameter.nms_thre = env->GetFloatField(param, nms_thre_id);
-    parameter.agnostic = env->GetBooleanField(param, agnostic_id);
     parameter.use_gpu = env->GetBooleanField(param, use_gpu_id);
 
     if (parameter.use_gpu == JNI_TRUE && ncnn::get_gpu_count() == 0) return nullptr;
@@ -262,7 +259,7 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
 
         auto num_proposals = scores_out.total();
         auto num_classes = class_out.w;
-        std::vector<Object> proposals;
+
         {
             for (auto y = 0; y < (long)num_proposals; y++) {
                 float* scores_row = scores_out.row(y);
@@ -272,7 +269,7 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
                 int class_index = std::max_element(class_row, class_row + num_classes) - class_row;
                 auto class_score = class_row[class_index];
                 prob *= (float)(prob * class_score);
-                if (prob < parameter.conf_thre) continue;
+                if (prob < 0.005) continue;
                 auto ctr_x = boxes_row[0]; auto ctr_y = boxes_row[1];
                 if (ctr_x < 0. || ctr_y < 0. ||
                     ctr_x > target_size ||
@@ -281,27 +278,12 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
                 auto obj_w = boxes_row[2]; auto obj_h = boxes_row[3]; auto obj_t = boxes_row[4];
                 obj_t = (float) (-obj_t * 180 / M_PI);
 
-                proposals.emplace_back(
+                objects.emplace_back(
                         ctr_x, ctr_y, obj_w, obj_h, obj_t,
                         class_index, prob
                 );
             }
         }
-
-        std::vector<int> picked;
-        {
-            qsort_descent_inplace(proposals);
-            nms_sorted_bboxes(proposals, picked, parameter.nms_thre, parameter.agnostic);
-        }
-
-        {
-            auto keep_num = picked.size();
-            objects.resize(keep_num);
-            for (auto i = 0; i < (long)keep_num; i++) {
-                objects[i] = proposals[picked[i]];
-            }
-        }
-
     }
     jobjectArray jObjArray = env->NewObjectArray((long)objects.size(), obj_cls, nullptr);
 
@@ -321,11 +303,64 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
 
     return jObjArray;
 }
-
 JNIEXPORT jobjectArray JNICALL
-Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Deal(JNIEnv *env, jobject thiz, jobject objects,
-                                                     jobject param) {
-    // TODO: implement Deal()
+Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Deal(JNIEnv *env, jobject thiz,
+                                                     jobjectArray objects, jobject param) {
+    Parameter parameter{};
+    parameter.conf_thre = env->GetFloatField(param, conf_thre_id);
+    parameter.nms_thre = env->GetFloatField(param, nms_thre_id);
+    parameter.agnostic = env->GetBooleanField(param, agnostic_id);
+    parameter.use_gpu = env->GetBooleanField(param, use_gpu_id);
+
+    if (parameter.use_gpu == JNI_TRUE && ncnn::get_gpu_count() == 0) return nullptr;
+
+    const auto count = env->GetArrayLength(objects);
+    std::vector<Object> proposals;
+    {
+        for (auto i = 0; i < count; i++) {
+            jobject jObj = env->GetObjectArrayElement(objects, i);
+            float prob = env->GetFloatField(jObj, prob_id);
+            if (prob < parameter.conf_thre) continue;
+
+            Object object;
+            object.prob = prob;
+            object.x = env->GetFloatField(jObj, x_id);
+            object.y = env->GetFloatField(jObj, y_id);
+            object.w = env->GetFloatField(jObj, w_id);
+            object.h = env->GetFloatField(jObj, h_id);
+            object.theta = env->GetFloatField(jObj, theta_id);
+            object.label = env->GetIntField(jObj, label_id);
+            proposals.emplace_back(object);
+        }
+    }
+    std::vector<int> picked;
+    {
+        qsort_descent_inplace(proposals);
+        nms_sorted_bboxes(proposals, picked, parameter.nms_thre, parameter.agnostic);
+    }
+
+    auto keep_count = picked.size();
+    std::vector<Object> keep_proposals(keep_count);
+    {
+        for (auto i = 0; i < (long)keep_count; i++) {
+            keep_proposals[i] = proposals[picked[i]];
+        }
+    }
+    jobjectArray jObjArray = env->NewObjectArray((long)keep_proposals.size(), obj_cls, nullptr);
+
+    for (auto i = 0; i < keep_proposals.size(); i++) {
+        jobject jObj = env->NewObject(obj_cls, obj_constructor_id); // TODO: this
+        env->SetFloatField(jObj, x_id, keep_proposals[i].x);
+        env->SetFloatField(jObj, y_id, keep_proposals[i].y);
+        env->SetFloatField(jObj, w_id, keep_proposals[i].w);
+        env->SetFloatField(jObj, h_id, keep_proposals[i].h);
+        env->SetFloatField(jObj, theta_id, keep_proposals[i].theta);
+        env->SetIntField(jObj, label_id, keep_proposals[i].label);
+        env->SetFloatField(jObj, prob_id, keep_proposals[i].prob);
+        env->SetObjectArrayElement(jObjArray, i, jObj);
+    }
+
+    return jObjArray;
 }
 
 }

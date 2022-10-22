@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar mMainNmsThreSeekBar;
     private TextView mMainNmsThreSeekBarText;
 
+    private ImageView mMainTencentQQIcon;
+    private ImageView mMainGithubIcon;
+    private ImageView mMainZhihuIcon;
+
     private BarChart mMainDetectNumberBarChart;
 
     private Handler handler = new Handler();
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap selectedBitmap = null;
 
     private int selectImageCode = 1001;
+
+    private YoloxObbNcnn.Obj[] detectObjects = null;
 
 
     @Override
@@ -95,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
         mMainNmsThreSeekBar = findViewById(R.id.main_nms_thre_seek_bar);
         mMainNmsThreSeekBarText = findViewById(R.id.main_nms_thre_seek_bar_text);
 
+        mMainTencentQQIcon = findViewById(R.id.main_tencent_qq_icon);
+        mMainGithubIcon = findViewById(R.id.main_github_icon);
+        mMainZhihuIcon = findViewById(R.id.main_zhihu_icon);
+
         mMainDetectBtn = findViewById(R.id.main_detect_btn);
 
         mMainDetectNumberBarChart = findViewById(R.id.main_detect_num_barchart);
@@ -108,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         // activity
         initMainBgGifView();
         initMainDetectBtn();
+        initMainIconBtn();
         initMainSeekBar();
         initMainStatistics();
         initMainTouchImageView();
@@ -132,17 +143,30 @@ public class MainActivity extends AppCompatActivity {
         mMainConfThreSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mMainConfThreSeekBarText.setText("CONF_THRE: " + (float)(progress / 100.));
+                float confThre = (float)(progress / 100.);
+                mMainConfThreSeekBarText.setText("CONF_THRE: " + confThre);
+                YoloxObbNcnn.parameter.confScoreThreshold = confThre;
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+                    new Thread(()->{
+                        YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Deal(detectObjects, YoloxObbNcnn.parameter);
+                        showDetectObjects(objects);
+                    }).start();
+                }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+                    new Thread(()->{
+                        YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Deal(detectObjects, YoloxObbNcnn.parameter);
+                        showDetectObjects(objects);
+                        updateBarChartData(objects);
+                    }).start();
+                }
             }
         });
         mMainNmsThreSeekBar.setProgress((int) (YoloxObbNcnn.parameter.nmsIoUThreshold * 100));
@@ -150,7 +174,15 @@ public class MainActivity extends AppCompatActivity {
         mMainNmsThreSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mMainNmsThreSeekBarText.setText("NMSF_THRE: " + (float)(progress / 100.));
+                float nmsThre = (float)(progress / 100.);
+                mMainNmsThreSeekBarText.setText("NMSF_THRE: " + nmsThre);
+                YoloxObbNcnn.parameter.nmsIoUThreshold = nmsThre;
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+                    new Thread(()->{
+                        YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Deal(detectObjects, YoloxObbNcnn.parameter);
+                        showDetectObjects(objects);
+                    }).start();
+                }
             }
 
             @Override
@@ -160,7 +192,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+                    new Thread(()->{
+                        YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Deal(detectObjects, YoloxObbNcnn.parameter);
+                        showDetectObjects(objects);
+                        updateBarChartData(objects);
+                    }).start();
+                }
             }
         });
     }
@@ -189,6 +227,42 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initMainIconBtn() {
+        mMainTencentQQIcon.setOnClickListener(new ClickUtils.OnDebouncingClickListener() {
+            @Override
+            public void onDebouncingClick(View v) {
+                try {
+                    String url = "mqqwpa://im/chat?chat_type=wpa&uin=969609856";
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Check whether installed QQ or not", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mMainGithubIcon.setOnClickListener(new ClickUtils.OnDebouncingClickListener() {
+            @Override
+            public void onDebouncingClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                Uri url = Uri.parse("https://github.com/DDGRCF");
+                intent.setData(url);
+                startActivity(intent);
+            }
+        });
+
+        mMainZhihuIcon.setOnClickListener(new ClickUtils.OnDebouncingClickListener() {
+            @Override
+            public void onDebouncingClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                Uri url = Uri.parse("https://www.zhihu.com/people/huo-yu-qiang-67");
+                intent.setData(url);
+                startActivity(intent);
+            }
+        });
+    }
+
     private void initMainDetectBtn() {
         mMainDetectBtn.setClickable(false);
         mMainDetectBtn.setOnClickListener(new ClickUtils.OnDebouncingClickListener() {
@@ -198,13 +272,17 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "please select image first!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                YoloxObbNcnn.Param parameters = new YoloxObbNcnn.Param();
-                new Thread(()->{
-                    YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Detect(selectedBitmap, parameters);
-                    handler.post(()->{
-                        showDetectObjects(objects);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        detectObjects = null;
+                        detectObjects = YoloxObbNcnn.getInstance().Detect(selectedBitmap, YoloxObbNcnn.parameter);
+                        YoloxObbNcnn.Obj[] objects = YoloxObbNcnn.getInstance().Deal(detectObjects, YoloxObbNcnn.parameter);
+                        Log.d(TAG, "ori number: " + detectObjects.length + " " + "deal number: " + objects.length);
                         updateBarChartData(objects);
-                    });
+                        showDetectObjects(objects);
+                    }
                 }).start();
             }
         });
@@ -230,7 +308,9 @@ public class MainActivity extends AppCompatActivity {
             MyUtils.drawCanvasRotatedRect(canvas, paint, objects[i]);
         }
 
-        mMainDisplayImageView.setImageBitmap(rgba);
+        handler.post(()->{
+            mMainDisplayImageView.setImageBitmap(rgba);
+        });
     }
 
     private void updateBarChartData(YoloxObbNcnn.Obj[] objects) {
@@ -314,8 +394,10 @@ public class MainActivity extends AppCompatActivity {
         BarData mBarData = new BarData(dataSets);
         mBarData.setBarWidth(0.6f);
         mBarChart.setData(mBarData);
-        mBarChart.invalidate();
-        mBarChart.animateXY(1000, 1000);
+        handler.post(()->{
+//            mBarChart.invalidate();
+            mBarChart.animateXY(1000, 1000);
+        });
     }
 
     @Override

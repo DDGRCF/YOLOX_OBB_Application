@@ -204,18 +204,21 @@
                 android:layout_marginTop="5dp">
 
                 <ImageView
+                    android:id="@+id/main_tencent_qq_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="5dp"
                     android:src="@drawable/ic_tencentqq" />
 
                 <ImageView
+                    android:id="@+id/main_github_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/ic_github" />
 
                 <ImageView
+                    android:id="@+id/main_zhihu_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginStart="10dp"

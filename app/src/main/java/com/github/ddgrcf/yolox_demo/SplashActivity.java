@@ -1,30 +1,25 @@
 package com.github.ddgrcf.yolox_demo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.util.Pair;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.BarUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ObjectUtils;
-import com.blankj.utilcode.util.ScreenUtils;
 import com.github.ddgrcf.yolox_demo.databinding.ActivitySplashBinding;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.jaredrummler.android.widget.AnimatedSvgView;
 
 import net.center.blurview.ShapeBlurView;
 
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -174,8 +169,9 @@ public class SplashActivity extends AppCompatActivity {
                         mSplashLoadingInformation.setText("load the model done .");
                         // delay for seeing
                         handler.postDelayed(()->{
-                            Intent intent = new Intent(this, MainActivity.class);
-                            startActivity(intent);
+//                            Intent intent = new Intent(this, MainActivity.class);
+//                            startActivity(intent);
+                            initSplashTransitionAnimation();
                         }, 200);
                     } else {
                         mSplashLoadingInformation.setText("load the model fail! please concat with author");
@@ -200,10 +196,20 @@ public class SplashActivity extends AppCompatActivity {
             }
         }, 500, 500);
     }
+    private void initSplashTransitionAnimation() {
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        Pair[] pairs = new Pair[3];
+        pairs[0] = new Pair<>(mSplashBgGifView, "app_bg_transition");
+        pairs[1] = new Pair<>(mSplashAppName, "app_name_title_transition");
+        pairs[2] = new Pair<>(mSplashLogSvgView, "app_logo_transition");
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SplashActivity.this, pairs);
+        startActivity(intent, options.toBundle());
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
         finish(); // destroy application
+        overridePendingTransition(0, 0);
     }
 }

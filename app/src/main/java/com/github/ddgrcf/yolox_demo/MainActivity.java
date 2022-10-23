@@ -1,6 +1,5 @@
 package com.github.ddgrcf.yolox_demo;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -8,20 +7,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -31,6 +27,8 @@ import com.blankj.utilcode.util.BarUtils;
 import com.blankj.utilcode.util.ClickUtils;
 import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ObjectUtils;
+import com.github.ddgrcf.yolox_demo.MyUtils.CommonUtils;
+import com.github.ddgrcf.yolox_demo.MyUtils.ZoomImageView;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -39,7 +37,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout mMainMainLayout;
 
     private GifImageView mMainBgGifView;
-    private ImageView mMainDisplayImageView;
+    private ZoomImageView mMainDisplayImageView;
     private ImageView mMainTouchImageView;
 
     private Button mMainDetectBtn;
@@ -156,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+//                    mMainDetectNumberBarChart.notifyDataSetChanged();
+                    mMainDetectNumberBarChart.invalidate();
+                }
             }
 
             @Override
@@ -187,7 +193,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                if (!ObjectUtils.isEmpty(detectObjects) && !ObjectUtils.isEmpty(mMainDisplayImageView.getDrawable())) {
+                    mMainDetectNumberBarChart.invalidate();
+                }
             }
 
             @Override
@@ -210,6 +218,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void touchImageViewMultiClick(View v) {
+        detectObjects = null;
+        List<Integer> mBarChartInitData = new ArrayList<>();
+        for (int i = 0; i < YoloxObbNcnn.classNames.size(); i++) {
+            mBarChartInitData.add(0);
+        }
+        setDetectNumberBarChartData(mMainDetectNumberBarChart, mBarChartInitData, YoloxObbNcnn.classNames);
         mMainTouchImageView.setAlpha(0.f);
         mMainTouchImageView.animate().alpha(1.f).setDuration(500);
         mMainTouchImageView.setVisibility(View.VISIBLE);
@@ -305,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < objects.length; i++)
         {
             paint.setColor(YoloxObbNcnn.classColors.get(objects[i].label));
-            MyUtils.drawCanvasRotatedRect(canvas, paint, objects[i]);
+            CommonUtils.drawCanvasRotatedRect(canvas, paint, objects[i]);
         }
 
         handler.post(()->{
@@ -351,12 +365,8 @@ public class MainActivity extends AppCompatActivity {
 
         XAxis xAxis = mMainDetectNumberBarChart.getXAxis();
 
-        //XY轴的设置
-        //X轴设置显示位置在底部
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //xAxis.setGranularity(1f);
 
-        //xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(true);
         xAxis.setDrawLabels(false);
 
@@ -395,10 +405,10 @@ public class MainActivity extends AppCompatActivity {
         mBarData.setBarWidth(0.6f);
         mBarChart.setData(mBarData);
         handler.post(()->{
-//            mBarChart.invalidate();
-            mBarChart.animateXY(1000, 1000);
+            mBarChart.animateXY(500, 500);
         });
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -416,11 +426,12 @@ public class MainActivity extends AppCompatActivity {
                     mMainDisplayImageView.animate().alpha(1.f).setDuration(500);
                     mMainDisplayImageView.setImageBitmap(tmpBitmap);
                     mMainDetectBtn.setClickable(true);
-                    mMainDisplayImageView.setOnClickListener(new ClickUtils.OnMultiClickListener(2) {
+                    mMainDisplayImageView.setOnClickListener(new ClickUtils.OnMultiClickListener(2, 888) {
                         @Override
                         public void onTriggerClick(View v) {
                             touchImageViewMultiClick(v);
                         }
+
                         @Override
                         public void onBeforeTriggerClick(View v, int count) {
 
@@ -490,5 +501,6 @@ public class MainActivity extends AppCompatActivity {
         matrix.postRotate(rotate);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
+
 
 }

@@ -12,6 +12,7 @@
         android:id="@+id/splash_bg_gif_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:transitionName="app_bg_transition"
         android:scaleType="centerCrop"/>
     <net.center.blurview.ShapeBlurView
         android:id="@+id/splash_bg_mask_view"
@@ -34,20 +35,22 @@
             android:textAllCaps="false"
             android:textSize="10sp"
             android:text="Skip"/>
+
         <com.jaredrummler.android.widget.AnimatedSvgView
             android:id="@+id/splash_animated_svg_view"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_marginTop="220dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="220dp"
+            android:transitionName="app_logo_transition"
             app:animatedSvgFillColors="@array/splash_glyph_colors"
-            app:animatedSvgGlyphStrings="@array/splash_glyph_strings"
             app:animatedSvgFillStart="1500"
             app:animatedSvgFillTime="1500"
+            app:animatedSvgGlyphStrings="@array/splash_glyph_strings"
             app:animatedSvgImageSizeX="240"
             app:animatedSvgImageSizeY="240"
             app:animatedSvgTraceTime="2500"
-            app:animatedSvgTraceTimePerGlyph="1200"/>
+            app:animatedSvgTraceTimePerGlyph="1200" />
         <TextView
             android:id="@+id/splash_app_name"
             android:layout_width="wrap_content"
@@ -59,6 +62,7 @@
             android:fontFamily="@font/baochi"
             android:textSize="30sp"
             android:textColor="@color/black"
+            android:transitionName="app_name_title_transition"
             android:text="YOLOX OBB"/>
         <TextView
             android:id = "@+id/splash_app_description"

@@ -1,4 +1,4 @@
-package com.github.ddgrcf.yolox_demo;
+package com.github.ddgrcf.yolox_demo.MyUtils;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -6,8 +6,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.blankj.utilcode.util.BarUtils;
+import com.github.ddgrcf.yolox_demo.YoloxObbNcnn;
 
-public class MyUtils {
+public class CommonUtils {
 
     public static void setMyStatusBar(Activity activity) {
         BarUtils.transparentStatusBar(activity);

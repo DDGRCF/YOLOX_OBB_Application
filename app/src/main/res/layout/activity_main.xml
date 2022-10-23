@@ -12,6 +12,7 @@
         android:id="@+id/main_bg_gif_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:transitionName="app_bg_transition"
         android:scaleType="centerCrop" />
     <net.center.blurview.ShapeBlurView
         android:layout_width="match_parent"
@@ -45,9 +46,10 @@
                 android:fontFamily="@font/bd_cartoon_shout"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Weclome YOLOX Demo"
+                android:text="Weclome YOLOX OBB Demo"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:transitionName="app_name_title_transition" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -71,13 +73,13 @@
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_touch" />
 
-            <ImageView
+            <com.github.ddgrcf.yolox_demo.MyUtils.ZoomImageView
                 android:id="@+id/main_display_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:padding="3dp"
                 android:background="@drawable/main_touch_area_stroke_corner"
-                android:scaleType="fitCenter" />
+                android:scaleType="matrix" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -166,16 +168,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/main_detect_btn_layout"
+            android:layout_marginBottom="50dp"
             android:layout_marginTop="10dp">
             <net.center.blurview.ShapeBlurView
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="match_parent"
                 app:blur_radius="25dp"
                 app:blur_corner_radius="5dp"/>
+
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/main_detect_num_barchart"
                 android:layout_width="match_parent"
-                android:layout_height="250dp" />
+                android:layout_height="match_parent" />
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
@@ -190,11 +194,13 @@
                 android:text="Author: DDGRCF"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
+
             <ImageView
                 android:id="@+id/main_logo_image_view"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/ic_log_plane" />
+                android:background="@drawable/ic_log_plane"
+                android:transitionName="app_logo_transition"/>
             <LinearLayout
                 android:id="@+id/main_author_info_layout"
                 android:layout_width="wrap_content"

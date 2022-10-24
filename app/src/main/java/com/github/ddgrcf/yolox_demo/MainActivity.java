@@ -426,7 +426,7 @@ public class MainActivity extends AppCompatActivity {
                     mMainDisplayImageView.animate().alpha(1.f).setDuration(500);
                     mMainDisplayImageView.setImageBitmap(tmpBitmap);
                     mMainDetectBtn.setClickable(true);
-                    mMainDisplayImageView.setOnClickListener(new ClickUtils.OnMultiClickListener(2, 888) {
+                    mMainDisplayImageView.setOnClickListener(new ClickUtils.OnMultiClickListener(2) {
                         @Override
                         public void onTriggerClick(View v) {
                             touchImageViewMultiClick(v);

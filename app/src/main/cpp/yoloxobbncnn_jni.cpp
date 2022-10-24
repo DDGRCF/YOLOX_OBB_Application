@@ -270,12 +270,12 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
                 auto class_score = class_row[class_index];
                 prob *= (float)(prob * class_score);
                 if (prob < 0.005) continue;
-                auto ctr_x = boxes_row[0]; auto ctr_y = boxes_row[1];
+                auto ctr_x = boxes_row[0] / scale; auto ctr_y = boxes_row[1] / scale;
                 if (ctr_x < 0. || ctr_y < 0. ||
                     ctr_x > target_size ||
                     ctr_y > target_size) continue;
 
-                auto obj_w = boxes_row[2]; auto obj_h = boxes_row[3]; auto obj_t = boxes_row[4];
+                auto obj_w = boxes_row[2] / scale; auto obj_h = boxes_row[3] / scale; auto obj_t = boxes_row[4];
                 obj_t = (float) (-obj_t * 180 / M_PI);
 
                 objects.emplace_back(

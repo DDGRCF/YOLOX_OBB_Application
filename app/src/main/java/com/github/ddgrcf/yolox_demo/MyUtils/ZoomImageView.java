@@ -205,6 +205,14 @@ public class ZoomImageView extends androidx.appcompat.widget.AppCompatImageView 
         }
     }
 
+    public boolean ismIsOneLoad() {
+        return mIsOneLoad;
+    }
+
+    public void setmIsOneLoad(boolean mIsOneLoad) {
+        this.mIsOneLoad = mIsOneLoad;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);

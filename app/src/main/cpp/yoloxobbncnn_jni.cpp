@@ -242,10 +242,10 @@ Java_com_github_ddgrcf_yolox_1demo_YoloxObbNcnn_Detect(JNIEnv *env, jobject self
     std::vector<Object> objects;
     {
         ncnn::Mat in = ncnn::Mat::from_android_bitmap_resize(env, bitmap, ncnn::Mat::PIXEL_RGB, w, h);
-        int wpad = (w + 31) / 32 * 32 - w;
-        int hpad = (h + 31) / 32 * 32 - h;
+        int wpad = target_size - w;
+        int hpad = target_size - h;
         ncnn::Mat in_pad;
-        ncnn::copy_make_border(in, in_pad, hpad / 2, hpad - hpad / 2, wpad / 2, wpad - wpad / 2, ncnn::BORDER_CONSTANT, 114.f);
+        ncnn::copy_make_border(in, in_pad, 0, hpad, 0, wpad, ncnn::BORDER_CONSTANT, 114.f);
         ncnn::Extractor ex = yolox_obb.create_extractor();
 
         ncnn::Mat scores_out;
